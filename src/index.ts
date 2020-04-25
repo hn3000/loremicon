@@ -2,7 +2,7 @@ import * as c from 'canvas';
 import * as express from 'express';
 import * as path from 'path';
 
-import { renderPixels, renderPoly, renderRect, renderGradient } from './painters';
+import { renderPixels, renderPoly, renderRect, renderGradient, renderNGon } from './painters';
 import { UnitFactorsDefault, dimension, dimensionProxy } from './dimension';
 import { box, position } from './position';
 import { Util } from './util';
@@ -33,6 +33,7 @@ function runServer(argv) {
     grad: renderGradient,
     pxls: renderPixels,
     poly: renderPoly,
+    ngon: renderNGon,
     rect: renderRect,
   };
   const formats = {

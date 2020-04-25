@@ -1,4 +1,5 @@
 import { Util } from "./util";
+import { Transform } from './transformer';
 
 export interface IPainterContext {
   context: CanvasRenderingContext2D;
@@ -114,5 +115,85 @@ export function renderRect(pctx: IPainterContext) {
     context.fillRect(x,y,w,h);
     context.strokeRect(x,y,w,h);
   }
+
+}
+
+
+export function renderNGon(pctx: IPainterContext) {
+  const { context, u, xs, ys } = pctx;
+
+  const n = u.rnd(3,7);
+
+  const mode = u.rnd(1,4);
+
+  context.fillStyle = u.rndColor();
+  context.fillRect(0,0,xs,ys);
+  context.beginPath();
+  context.save();
+
+  const w2 = xs/2, h2 = ys/2; 
+  const r = Math.max(w2,h2);
+
+  const angle = 2*Math.PI / n;
+  const rotator = Transform.identity().rotateAt(angle, w2, h2)
+
+  const startAngle = u._minirnd() * 2*Math.PI;
+  Transform.identity().rotateAt(startAngle, w2, h2).apply(context);
+
+  const s = h2+u.rnd(r,r/3);
+
+  //console.log(`ngon: n=${n} / s=${s} / r=${r} / w2=${w2} / h2=${h2}`);
+
+  let inner: (first: boolean)=>void;
+  switch(mode) {
+    default:
+      case 0:
+        inner = (first) => (first?context.moveTo(w2,s):context.lineTo(w2,s)); 
+        break;
+      case 1: {
+          const m = u.rnd(3, 7);
+          const d = [];
+          for (let i = 0; i < m; ++i) {
+            d.push(u.rnd(1, i*r/m));
+          }
+          inner = () => {
+            context.moveTo(w2,h2);
+            for (let i = 0; i < m; ++i) {
+              context.lineTo(w2+d[i], h2+i*r/m);
+            }
+            for (let i = m-1; i >= 0; --i) {
+              context.lineTo(w2-d[i], h2+i*r/m);
+            }
+            context.lineTo(w2,h2);
+          }; 
+        }
+        break;
+      case 2:
+        inner = (first) => {
+          const y = u.rnd(s,s/2);
+          if (first) {
+            context.moveTo(w2,y)
+
+          } else {
+            context.lineTo(w2,y); 
+          }
+        };
+        break;
+    }
+
+  inner(true);
+  for (var i = 1; i < n; ++i) {
+    rotator.apply(context);
+    inner(false);
+  }
+
+  context.closePath();
+
+  context.fillStyle = u.rndColor();
+  context.strokeStyle = u.rndColor();
+  context.fill();
+  context.stroke();
+
+  context.restore();
 
 }
