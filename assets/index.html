@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      #images {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      body {
+        background-color: #eef;
+        background-image: url(/grad/512/512/0/jpg);
+        background-size: cover;
+      }
+      body > div {
+        width: 80vw;
+        margin: 2em auto;
+        padding: 1em;
+        background-color: #fff;
+      }
+      #overview {
+        padding: 1em;
+      }
+      small, .image a {
+        font-size: 0.5rem;
+      }
+      .image {
+        width: 128px;
+        min-height: 150px;
+        text-align: center;
+        padding: 1em;
+      }
+      .image img {
+        margin: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <div id="overview">
+        <h1>Lorem Icon</h1>
+        <div>Does for icons, what lorem ipsum did for text.</div>
+        <div><a href="/help-me/">See some options.</a></div>
+        <h2>Some random icons to choose from:</h2>
+        <p>Links are permalinks, if Javascript is enabled.</p>
+      </div>
+      <div id="images">
+        <noscript>
+        <div>
+          <img src="/128/128">
+        </div>
+        <div>
+          <img src="/128/128">
+        </div>
+        <div>
+          <img src="/128/128">
+        </div>
+        <div>
+          <img src="/128/128">
+        </div>
+        <div>
+          <img src="/128/128">
+        </div>
+        <div>
+          <img src="/128/128">
+        </div>
+        <div>
+          <img src="/128/128">
+        </div>
+        <div>
+          <img src="/128/128">
+        </div>
+        <div>
+          <img src="/128/128">
+        </div>
+        <div>
+          <img src="/128/128">
+        </div>
+        <div>
+          <img src="/128/128">
+        </div>
+        </noscript>
+      </div>
+    </div>
+    <script>
+      function imageBlock(path, seed) {
+        const url = new URL(path, location.href);
+        const img = document.createElement('img');
+        const holder = document.createElement('div');
+        const linkHolder = document.createElement('div');
+        const link = document.createElement('a');
+        holder.appendChild(img);
+        holder.appendChild(linkHolder);
+        linkHolder.appendChild(link);
+        holder.classList.add('image');
+        const baseUrl = new URL('/', url);
+        const baseLength = baseUrl.toString().length;
+        link.appendChild(document.createTextNode(url.toString().substr(baseLength - 1)));
+        link.href = url.toString();
+        let realUrl = url;
+        if (0 === +seed) {
+          fetch(url).then(res => { 
+            const u = res.url.toString();
+
+            console.log(`fetch ${url} returned ${u}`);
+
+            img.setAttribute('src', u);
+  
+            link.href = u.toString();
+            link.appendChild(document.createTextNode(u.toString().substr(baseLength - 1)));
+            link.firstChild.remove();
+          });
+        } else {
+          img.setAttribute('src', url);
+        }
+
+        return holder;
+      }
+
+      const imagesHolder = document.querySelector('#images');
+      imagesHolder.innerHTML = '';
+      const styles = [
+        'grad',
+        'poly',
+        'rect'
+      ]
+      for (var i = 0; i < 50; ++i) {
+        const seed = Math.round(Math.random()*1e12);
+        let ib = imageBlock(`/${styles[i % styles.length]}/128/128/${seed}/jpg`, seed);
+        imagesHolder.append(ib);
+      }
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>LoremIcon Options Sheet</title>
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 1.5rem;
+      }
+      body > div {
+        width: 75vw;
+        margin: auto;
+        margin-top: 3rem;
+      }
+      body div div {
+        margin-top: 1em;
+        padding: .5rem;
+      }
+      input, select, button {
+        font-size: 1.5rem;
+      }
+      h1 { 
+        font-size: 20pt;
+      }
+      #images {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap-reverse;
+      }
+
+      div.image {
+        margin: 0.5em;
+        font-size: 0.75rem;
+        text-align: center;
+      }
+      div.image img {
+        margin: auto;
+      }
+      #path {
+        background-color: #ccd;
+        display: flex;
+        flex-direction: row;
+        vertical-align: top;
+      }
+      #path div {
+        display: inline;
+        vertical-align: top;
+      }
+
+      #path, #path input, #path select {
+        font-family: B612, Consolas, 'Courier New', Courier, monospace;
+      }
+      #path input {
+        border: none;
+        border-bottom: 1px solid black;
+        width: 2em;
+        min-width: 1em;
+        max-width: 3em;
+        display: inline-block;
+      }
+      #path input#seed {
+        width: 6em;
+        max-width: 6em;
+      }
+      span#q { display: none; } 
+
+      small { font-size: 0.8rem; }
+      
+    </style>
+  </head>
+  <body>
+    <div>
+      <h1>LoremIcon Options Sheet</h1>
+      <div><a href="/">Lorem Icon Overview</a></div>
+      <div><select id="presets"></select> Preset</div>
+      <div id="path">
+        <span id="urlprefix"></span>
+        <span>
+        <select id="style">
+          <option>grad</option>
+          <option>poly</option>
+          <option>rect</option>
+          <option>pxls</option>
+          <option>rndm</option>
+        </select>
+        </span>
+        /
+        <span>
+          <input type="text" id="x" length="3" value="128">
+          <br><small>width</small>
+        </span>
+        /
+        <span>
+          <input type="text" id="y" length="3" value="128">
+          <br><small>height</small>
+        </span>
+        /
+        <span>
+          <input type="text" id="seed" length="7" value="0">
+          <br><small>seed <a href="#" class="seed-new">new</a></small>
+          </span>
+        /
+        <span>
+          <select id="format">
+            <option>png</option>
+            <option>jpeg</option>
+            <option>svg</option>
+            <option>pdf</option>
+            <option>data</option>
+            <option>datapng</option>
+            <option>datajpeg</option>
+          </select>
+        </span>
+        <span id="q">,<input type="text"></span>
+      </div>
+      <div id="preview">
+        <img>
+        <div>
+          <a></a>
+        </div>
+      </div>
+      <div><button type="button">Keep!</button> <button type="button" class="seed-new">Another!</button></div>
+      
+      <div id="images">
+
+      </div>
+      <div>
+        <small>
+        This is a non-commercial project.
+        Copyright (c) 2020 Harald Niesche.
+        <a href="https://github.com/hn3000/loremicon">Source on github</a> 
+        </small>
+      </div>
+    </div>
+    <script>
+
+      const presets = [
+        { label: "rndm", style: "rndm", x:128, y: 128 },
+        { label: "rect", style: "rect", x:128, y: 128, format: 'png' },
+        { label: "poly", style: "poly", x:128, y: 128, format: 'png' },
+        { label: "grad", style: "grad", x:128, y: 128, format: 'jpeg' },
+        { label: "pxls", style: "pxls", x:128, y: 128, format: 'jpeg' },
+      ];
+      function $1(x) { return document.querySelector(x); }
+      function $$(x, c) { 
+        const result = document.querySelectorAll(x);
+        if (c) {
+          result.forEach(c);
+        }
+        return result;
+      }
+
+      $1('#urlprefix').innerHTML = new URL('/', location.href).toString();
+
+      function currentUrl() {
+        const style = $1("#style").value;
+        const x = $1("#x").value
+        const y = $1("#y").value
+        const seed = $1("#seed").value;
+        const format = $1("#format").value;
+
+        let url;
+        if (0 !== +seed) {
+          url = new URL(`/${style}/${x}/${y}/${seed}/${format}`, location.href);
+        } else {
+          url = new URL(`/${style}/${x}/${y}/${format}?`+Math.random().toString(36), location.href);
+        }
+        return [url, seed, format];
+      }
+
+      function run() {
+        const [url, seed] = currentUrl();
+        console.log(`add image: ${url}`);
+
+        $1('#images').appendChild(imageBlock(url, seed));
+
+        newSeed();
+      }
+
+      function newSeed() {
+        $1('#seed').value = 0;
+        preview();
+      }
+
+      function updatePreview(url) {
+        $1('#preview img').src = url;
+        $1('#preview a').href = url;
+        const isFirst = null == $1('#preview a').firstChild;
+        if (!isFirst) {
+          $1('#preview a').firstChild.remove();
+        }
+        $1('#preview a').appendChild(document.createTextNode(url));
+      }
+
+      function preview() {
+        const [url, seed, format] = currentUrl();
+
+        console.log('preview', url, seed, format);
+
+        if (+seed === 0) {
+          if (format.startsWith('data')) {
+            url = url.replace(/data.*/, 'jpg,0.1');
+          }
+          fetch(url).then(res => {
+            const redirUrl = res.url;
+            updatePreview(redirUrl);
+
+            // http://host/style/x/y/seed/format
+            // 0    1 2    3     4 5 6
+            const parts = redirUrl.split('/');
+            console.log(parts[6]);
+            $1('#seed').value = parts[6];
+          });
+        } else { 
+          updatePreview(url);
+        }
+      }
+
+      function imageBlock(url, seed) {
+        const img = document.createElement('img');
+        const holder = document.createElement('div');
+        const linkHolder = document.createElement('div');
+        const link = document.createElement('a');
+        holder.appendChild(img);
+        holder.appendChild(linkHolder);
+        linkHolder.appendChild(link);
+        holder.classList.add('image');
+        const baseUrl = new URL('/', url);
+        const baseLength = baseUrl.toString().length;
+        link.appendChild(document.createTextNode(url.toString().substr(baseLength - 1)));
+        link.href = url.toString();
+        let realUrl = url;
+        if (0 === +seed) {
+          fetch(url).then(res => { 
+            const u = res.url.toString();
+
+            console.log(`fetch ${url} returned ${u}`);
+
+            img.setAttribute('src', u);
+  
+            link.href = u.toString();
+            link.appendChild(document.createTextNode(u.toString().substr(baseLength - 1)));
+            link.firstChild.remove();
+          });
+        } else {
+          img.setAttribute('src', url);
+        }
+
+        return holder;
+      }
+
+      $1('#path').addEventListener('change', preview);
+      $$('#path').forEach(i => i.addEventListener('keyup', preview));
+      //$$('#path input').forEach(i => i.addEventListener('keyup', preview));
+
+      $$('.seed-new', x => x.addEventListener('click', newSeed));
+
+      preview();
+
+
+      $1('button').addEventListener('click', run);
+
+      $1('select#presets').innerHTML = '<option>choose one</option>'+presets.map((x,i) => `<option value="${i}">${x.label}</option>`).join();
+      $1('select#presets').addEventListener('input', activatePreset);
+      // Edge does not send input event
+      // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4660045/
+      $$('select#presets option').forEach(o => o.addEventListener('click', activatePreset));
+      let activePreset = null;
+      function activatePreset(evt) {
+        const idx = evt && evt.target.value;
+        const preset = presets[idx || 0];
+        if (activePreset === preset) {
+          //console.log('preset already active:', preset);
+          return;
+        }
+        activePreset = preset;
+        console.log('activating preset:', idx, preset);
+
+        for (var k of Object.keys(preset)) {
+          if (null != $1('#'+k)) {
+            $1('#'+k).value = preset[k];
+          }
+        }
+        preview();
+      }
+    </script>
+  </body>
+</html>

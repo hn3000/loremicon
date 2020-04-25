@@ -1,0 +1,18 @@
+version: '3'
+services:
+  loremicon:
+    restart: unless-stopped
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 1s
+        max_attempts: 30
+        window: 120s
+    build: 
+      context: .
+    ports:
+     - "3478:3478"
+    environment:
+      WATERMARK: "#fff"
+      PORT: 3478
+      CPU_COUNT: 4

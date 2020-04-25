@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "out-test",
+    "rootDirs": ["node_modules","."],
+    "target": "es5",
+    "sourceMap": true
+  },
+  "include": ["test", "src", "node_modules/tsunit.external/*.ts"]
+}

@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "alwaysStrict": true,
+    "moduleResolution": "node",
+    "outDir": "out",
+    "rootDirs": ["src"],
+    "target": "es5",
+    "downlevelIteration": true,
+    "lib": [ "es2015" ]
+  },
+  "include": ["src"],
+  "compileOnSave": true
+}
