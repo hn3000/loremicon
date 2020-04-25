@@ -35,6 +35,7 @@ function runServer(argv) {
     poly: renderPoly,
     ngon: renderNGon,
     rect: renderRect,
+    rndm: renderRandom,
   };
   const formats = {
     pdf: [writePDF, 'pdf'],
@@ -103,6 +104,15 @@ function runServer(argv) {
       );
     }
   });
+
+  function renderRandom(context, req, res) {
+    const all = Object.keys(styles).filter(x => x !== 'rndm');
+    const chosen = all[Math.floor(Math.random()*all.length) % all.length];
+
+    const newUrl = req.originalUrl.replace('/rndm/', `/${chosen}/`);
+    res.redirect(newUrl);
+  }
+    
 }
 
 const { WATERMARK=false} = process.env;
@@ -137,7 +147,7 @@ function createImage(painter, [writer, type], req, res, q) {
     };
 
   
-    painter({ context, u, xs: x, ys: y });
+    painter({ context, u, xs: x, ys: y }, req, res);
 
     const watermark = WATERMARK;
     maybeRenderWatermark(req, canvas, watermark, width, height, env0);
