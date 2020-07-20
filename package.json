@@ -13,7 +13,7 @@
     "tsc": "tsc -p tsconfig.json",
     "prebuild": "tsc -p tsconfig.json",
     "build": "webpack -c webpack.config.json",
-    "webpack": "webpack-dev-server         -c webpack.dev.json",
+    "webpack": "webpack-dev-server -c webpack.dev.json",
     "predocker": "npm run test",
     "docker": "docker build . -t loremicon",
     "docker-run": "docker-compose up -d --build",
@@ -67,7 +67,8 @@
     ],
     "reporter": [
       "text",
-      "html"
+      "html",
+      "lcov"
     ]
   }
 }
