@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <style>
+      #images {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      body {
+        background-color: #eef;
+        background-image: url(/grad/512/512/0/jpg);
+        background-size: cover;
+      }
+      body > div {
+        width: 80vw;
+        margin: 2em auto;
+        padding: 1em;
+        background-color: #fff;
+      }
+      #overview {
+        padding: 1em;
+      }
+      small, .image a {
+        font-size: 0.8rem;
+      }
+      .image {
+        width: 128px;
+        min-height: 150px;
+        text-align: center;
+        padding: 1em;
+      }
+      .image img {
+        margin: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="images"></div>
+  </body>
+</html>

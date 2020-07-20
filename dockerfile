@@ -28,15 +28,17 @@ RUN npm install --ci --ignore-optional --production=true --non-interactive
 
 FROM builder as compiler
 
+WORKDIR /chart-server
+
 RUN npm install --ci --ignore-optional --non-interactive
 
-COPY tsconfig*.json ./
+COPY *config*.json ./
+COPY webpack* ./
 COPY test/** ./test/
 COPY src/** ./src/
 
 RUN npm test
-
-RUN npm run tsc
+RUN npm run build
 
 FROM base as runtime
 
@@ -47,6 +49,7 @@ WORKDIR /chart-server
 
 COPY --from=builder /chart-server/ .
 COPY --from=compiler /chart-server/out ./out/
+COPY --from=compiler /chart-server/dist ./dist/
 
 COPY assets/* ./assets/
 

@@ -2,8 +2,8 @@ import * as c from 'canvas';
 import * as express from 'express';
 import * as path from 'path';
 
-import { renderPixels, renderPoly, renderRect, renderGradient, renderNGon } from './painters';
-import { UnitFactorsDefault, dimension, dimensionProxy } from './dimension';
+import { PAINTERS } from './painters';
+import { UnitFactorsDefault, dimensionProxy } from './dimension';
 import { box, position } from './position';
 import { Util } from './util';
 
@@ -15,6 +15,13 @@ function runServer(argv) {
 
   app.get("/", function(req, res) {
     res.sendFile("index.html", { root: path.resolve(__dirname, '../assets') });
+  });
+  app.get("/b/:file?", function(req, res) {
+    if (req.url === '/b') {
+      res.redirect('/b/');
+    }
+    const { file='browser.html' } = req.params;
+    res.sendFile(file, { root: path.resolve(__dirname, '../dist') });
   });
   app.get("/help-me/example/:json", function(req, res) {
     //console.log(`GET ${req.params.json}`);
@@ -30,11 +37,7 @@ function runServer(argv) {
   });
 
   const styles = {
-    grad: renderGradient,
-    pxls: renderPixels,
-    poly: renderPoly,
-    ngon: renderNGon,
-    rect: renderRect,
+    ...PAINTERS,
     rndm: renderRandom,
   };
   const formats = {
@@ -58,7 +61,7 @@ function runServer(argv) {
     res.redirect(`/poly/${x}/${y}/${seed}/png`);
   });
   app.get("/:style/:x/:y/", function handleStyleXY(req, res) {
-    const { style, x,y, format } = req.params;
+    const { style, x,y } = req.params;
     const seed = Math.ceil(Math.random()*1e8);
     res.setHeader('cache-control', 'no-cache');
     res.redirect(`/${style}/${x}/${y}/${seed}/png`);
@@ -112,7 +115,7 @@ function runServer(argv) {
     const newUrl = req.originalUrl.replace('/rndm/', `/${chosen}/`);
     res.redirect(newUrl);
   }
-    
+
 }
 
 const { WATERMARK=false} = process.env;

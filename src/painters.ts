@@ -11,6 +11,19 @@ export interface Painter {
   (ctx: IPainterContext): void;
 }
 
+
+export const PAINTERS: { [key: string]: Painter } = {
+  grad: renderGradient,
+  pxls: renderPixels,
+  poly: renderPoly,
+  ngon: renderNGon,
+  rect: renderRect,
+  lclr: renderLightColors,
+  dclr: renderDarkColors,
+  mclr: renderMixedColors,
+};
+
+
 export function renderPixels(pctx: IPainterContext) {
   const { context, u, xs, ys } = pctx;
 
@@ -196,4 +209,164 @@ export function renderNGon(pctx: IPainterContext) {
 
   context.restore();
 
+}
+
+function distance(a,b) {
+  const dx = a.x-b.x;
+  const dy = a.y-b.y;
+
+  return Math.sqrt(dx*dx+dy*dy);
+} 
+
+function renderPixelColors(pctx, colorFun) {
+  const { context, xs, ys } = pctx;
+
+  let imagedata = context.createImageData(xs,ys);
+
+  var i = 0;
+  var data = imagedata.data;
+  for (var y = 0; y < ys; ++y) {
+    for (var x = 0; x < xs; ++x) {
+      const [r,g,b] = colorFun(x,y);
+      data[i++] = r;
+      data[i++] = g;
+      data[i++] = b;
+      data[i++] = 255; // alpha = 1
+    }
+  }
+
+  context.putImageData(imagedata, 0, 0,)
+
+}
+
+export function renderDarkColors(pctx: IPainterContext) {
+  const { u, xs, ys } = pctx;
+
+  const anchors = [];
+
+  const count = u.rnd(2,9);
+  for (let index = 0; index < count; ++index) {
+    anchors.push({
+      x: u.rnd(xs),
+      y: u.rnd(ys),
+      r: u.rnd(255),
+      g: u.rnd(255),
+      b: u.rnd(255),
+    });
+  }
+
+  const minD = Math.max(xs,ys)/2; //Math.min(...anchors.slice(0, count-1).map((a,i) => Math.min(...anchors.slice(i+1).map(b => distance(a,b)))));
+
+  const color = (x,y) => {
+    const p = {x,y};
+
+    let r = 0, g = 0, b = 0;
+
+    anchors.forEach(a => {
+      const d = distance(a, p);
+      const f = Math.max(1 - d/minD, 0) / count * 2;
+      r += a.r*f;
+      g += a.g*f;
+      b += a.b*f;
+    });
+
+    return [r,g,b] 
+  }
+
+  renderPixelColors(pctx, color);
+}
+
+export function renderLightColors(pctx: IPainterContext) {
+  const { u, xs, ys } = pctx;
+
+  const anchors = [];
+
+  const count = u.rnd(2,9);
+  for (let index = 0; index < count; ++index) {
+    anchors.push({
+      x: u.rnd(xs),
+      y: u.rnd(ys),
+      r: u.rnd(255),
+      g: u.rnd(255),
+      b: u.rnd(255),
+    });
+  }
+
+  const minD = Math.max(xs,ys)/2; //Math.min(...anchors.slice(0, count-1).map((a,i) => Math.min(...anchors.slice(i+1).map(b => distance(a,b)))));
+
+  const color = (x,y) => {
+    const p = {x,y};
+
+    let r = 255, g = 255, b = 255;
+
+    anchors.forEach(a => {
+      const d = distance(a, p);
+      const f = Math.max(1 - d/minD, 0) / count * 2;
+      r -= a.r*f;
+      g -= a.g*f;
+      b -= a.b*f;
+    });
+
+    return [r,g,b] 
+  }
+
+
+  renderPixelColors(pctx, color);
+}
+
+
+export function renderMixedColors(pctx: IPainterContext) {
+  const { u, xs, ys } = pctx;
+
+  const anchors = [];
+
+  const count = u.rnd(2,9);
+  for (let index = 0; index < count; ++index) {
+    anchors.push({
+      x: u.rnd(xs),
+      y: u.rnd(ys),
+      r: u.rnd(255),
+      g: u.rnd(255),
+      b: u.rnd(255),
+    });
+  }
+
+  const color = (x,y) => {
+    const p = {x,y};
+
+    let closest = [];
+    anchors.forEach(a => {
+      const d = distance(a, p);
+
+      if (closest.length === 0) {
+        closest.push({ ...a, d });
+      } else {
+        for (var i = 0, n = Math.min(3, closest.length); i < n; ++i) {
+          if (d <= closest[i].d) {
+            closest.splice(i, 0,  { ...a, d });
+            closest = closest.slice(0, 3);
+          }
+        }
+        }
+    });
+
+    const distances = closest.map(x => x.d);
+    const maxD = Math.max(...distances);
+    const minD = Math.min(...distances);
+    const sumD = distances.reduce((a,b) => a+b, 0);
+
+    let [r, g, b] = [0,0,0];
+    
+    closest.forEach(a  => {
+      const f = Math.max(1 - (a.d / sumD), 0);
+      r += f * a.r;
+      g += f * a.g;
+      b += f * a.b;
+    });
+
+    return [r,g,b] 
+  }
+
+
+  renderPixelColors(pctx, color);
 }
