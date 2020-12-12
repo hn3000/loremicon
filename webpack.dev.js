@@ -8,7 +8,7 @@ module.exports = () => {
   config.mode = 'development';
   config.devtool = 'inline-source-map';
   config.devServer = {
-    contentBase: path.resolve(__dirname, 'dist'),
+    static: path.resolve(__dirname, 'dist'),
   };
 
   console.log('webpack dev config', config);

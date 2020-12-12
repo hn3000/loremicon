@@ -16,8 +16,8 @@ RUN apk --update add --virtual build-dependencies python make gcc g++  \
 
 RUN apk add --no-cache \
     cairo-dev \
-    jpeg-dev \
     pango-dev \
+    jpeg-dev \
     giflib-dev
 
 WORKDIR /chart-server
