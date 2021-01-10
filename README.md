@@ -30,6 +30,14 @@ of pre-determined colors, you can specify either
 `colors=ccc,...` or `palette=ccc,...` as an additional path
 segment before the format (which must always come last).
 
+The difference between the two is how colors are selected:
+
+* with `colors`, every time a color is needed, the next one from your list is used (and re-used, if more colors are 
+  needed than were given)
+* `palette` just provides a list to select from, and every use of a color chooses one at random -- which means that it 
+   can use the same one every time, if that happens, maybe add another color to your list; this works because all 
+   "randomness" derives from the seed in the URL and is the same every time you request an image using the same seed
+
 ![/poly/128/128/577251899890/colors=ccc,777/jpg](https://loremicon.com/poly/128/128/577251899890/colors=ccc,777/jpg)<br>`/poly/128/128/577251899890/colors=ccc,777/jpg`
 
 ![/poly/128/128/577251899890/palette=ccc,777/jpg](https://loremicon.com/poly/128/128/577251899890/palette=ccc,777/jpg)<br>`/poly/128/128/577251899890/palette=ccc,777/jpg`
