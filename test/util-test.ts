@@ -42,10 +42,22 @@ export class UtilTest extends TestClass {
       if (w.length > 5) {
         w.shift();
       }
-      const t = w.filter(a => w.filter(b => a === b).length > 2);
-      this.isTrue(1 >= t.length, "no long runs"+t.join(','));
+      const t = w.filter(a => w.filter(b => a === b).length > 3);
+      this.isTrue(1 >= t.length, "no long runs "+t.join(','));
       this.isTrue(x >= 0.0, "more than 0.0");
       this.isTrue(x <= 65536.0, "less than 65536");
+    }
+  }
+
+  testNextRnd() {
+    let u = new Util(0);
+
+    for (var i = 0; i < 10000000; ++i) {
+      let nextPreview1 = u.rndPreview(0,1e12);
+      let nextPreview2 = u.rndPreview(0,1e12);
+      let nextRandom = u.rnd(0,1e12);
+      this.areIdentical(nextPreview1, nextPreview2);
+      this.areIdentical(nextPreview1, nextRandom);
     }
   }
 

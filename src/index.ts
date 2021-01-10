@@ -39,6 +39,7 @@ function runServer(argv) {
   const styles = {
     ...PAINTERS,
     rndm: renderRandom,
+    drnd: renderDeterministicRandom,
   };
   const formats = {
     pdf: [writePDF, 'pdf'],
@@ -53,6 +54,7 @@ function runServer(argv) {
 
   app.get("/favicon.ico", function handleFavicon(req, res) {
     res.redirect(`/rect/64/64/35863/png`);
+    res.end();
   });
   app.get("/:x/:y", function handleXY(req, res) {
     const { x,y } = req.params;
@@ -73,7 +75,25 @@ function runServer(argv) {
     res.redirect(`/${style}/${x}/${y}/${seed}/${format}`);
   });
 
-  app.get("/:style/:x/:y/:seed/:format",  function handleStyleXYSeedFormat(req, res) {
+  app.get("/:style/:x/:y/:seed/:format", handleStyleXYSeedFormat);
+  app.get("/:style/:x/:y/:seed/:extra1/:format",  handleStyleXYSeedFormat);
+  app.get("/:style/:x/:y/:seed/:extra1/:extra2/:format",  handleStyleXYSeedFormat);
+  app.get("/:style/:x/:y/:seed/:extra1/:extra2/:extra3/:format",  handleStyleXYSeedFormat);
+
+  function handleStyleXYSeedFormat(req, res) {
+    const { extra1, extra2, extra3 } = req.params;
+
+    const extraParams = {} as { [key:string]: string|string[]};
+    const extra = [extra1,extra2,extra3].filter(x => null != x && x !== '');
+    for (let e of extra) {
+      if (-1 != e.indexOf('=')) {
+        let [k,v] = e.split('=');
+        extraParams[k] = v.split(',');
+      }
+    }
+    if (Object.keys(extraParams).length) {
+      console.log('found extra params', extraParams);
+    }
     
     const styleFun = styles[req.params.style];
     const fmtq = (req.params.format  || 'jpg,0.3').split(',');
@@ -82,12 +102,12 @@ function runServer(argv) {
     const format = formats[fmt];
 
     if (styleFun && format) {
-      createImage(styleFun, format, req, res, q);
+      createImage(styleFun, format, req, res, q, extraParams);
     } else {
       res.sendStatus(404);
       console.log("not found: ", req.path, req.params);
     }
-  });
+  }
 
   let { HOST = "::0", PORT = 3478 } = process.env;
   let r = app.listen(+PORT, HOST);
@@ -109,57 +129,83 @@ function runServer(argv) {
   });
 
   function renderRandom(context, req, res) {
-    const all = Object.keys(styles).filter(x => x !== 'rndm');
+    const all = Object.keys(PAINTERS);
     const chosen = all[Math.floor(Math.random()*all.length) % all.length];
 
     const newUrl = req.originalUrl.replace('/rndm/', `/${chosen}/`);
     res.redirect(newUrl);
-  }
+    res.end();
 
+    return 'no-output';
+  }
+  function renderDeterministicRandom(context, req, res) {
+    const all = Object.keys(PAINTERS);
+    const { seed } = req.params;
+    const util = new Util(seed);
+    const chosen = all[util.rnd(all.length-1)];
+
+    const newUrl = req.originalUrl.replace('/drnd/', `/${chosen}/`);
+    res.redirect(newUrl);
+    res.end();
+
+    return 'no-output';
+  }
 }
 
 const { WATERMARK=false} = process.env;
 
-/** @param res: express.Request */
-function createImage(painter, [writer, type], req, res, q) {
+function createImage(painter, [writer, type], req: express.Request, res: express.Response, q: number, extraParams) {
   const start = Date.now();
-  //console.log(req.path, req.params, req.body);
-  const { x, y, seed } = req.params;
-
-  let { width, height } = dimensionProxy(req.body || {}, { width: x, height: y });
-  const w = width.value();
-  const h = height.value();
-  const area = w * h;
-  if (w < 0 || h < 0 || area > 3e6) {
-    res.sendStatus(400, `illegal size`);
-  } else {
-    let xs = width.value();
-    let ys = height.value();
-    let canvas = new c.Canvas(xs, ys, type);
-    const context = canvas.getContext('2d');
-    context.save();
-
-    const u = new Util(seed);
-    const env0 = { 
-      vh: height.value()/100, 
-      vw: width.value() / 100, 
-      vmin: Math.min(height.value(), width.value()) / 100, 
-      vmax: Math.max(height.value(), width.value()) / 100,
-      ...UnitFactorsDefault,
-      seed: (u as any)._seed
-    };
-
+  try {
+    //console.log(req.path, req.params, req.body);
+    const { x, y, seed, colors } = req.params;
   
-    painter({ context, u, xs: x, ys: y }, req, res);
+    if (colors) {
+      console.log('got colors: ', colors);
+    }
+  
+    let { width, height } = dimensionProxy(req.body || {}, { width: x, height: y });
+    const w = width.value();
+    const h = height.value();
+    const area = w * h;
+    if (w < 0 || h < 0 || area > 3e6) {
+      res.sendStatus(400);
+    } else {
+      let xs = width.value();
+      let ys = height.value();
+      let canvas = new c.Canvas(xs, ys, type);
+      const context = canvas.getContext('2d');
+      context.save();
 
-    const watermark = WATERMARK;
-    maybeRenderWatermark(req, canvas, watermark, width, height, env0);
-
-    writer(canvas, res, q);
+      let { colors, palette } = extraParams;
+      let utilOptions = { colors, palette };
+  
+      const u = new Util(+seed, utilOptions);
+      const env0 = { 
+        vh: height.value()/100, 
+        vw: width.value() / 100, 
+        vmin: Math.min(height.value(), width.value()) / 100, 
+        vmax: Math.max(height.value(), width.value()) / 100,
+        ...UnitFactorsDefault,
+        seed: (u as any)._seed
+      };
+  
+    
+      const painted = painter({ context, u, xs: x, ys: y }, req, res);
+      if (painted !== 'no-output') {
+        const watermark = WATERMARK;
+        maybeRenderWatermark(req, canvas, watermark, width, height, env0);
+    
+        writer(canvas, res, q);
+      }
+    }
+    res.on('close', () => {
+      console.log(`generated ${req.url} in ${Date.now() - start}ms`);
+    });
+  } catch (ex) {
+    console.log(`error for ${req.url} after ${Date.now() - start}ms`, ex);
   }
-  res.on('close', () => {
-    console.log(`generated ${req.url} in ${Date.now() - start}ms`);
-  });
+
 }
 
 function maybeRenderWatermark(req, canvas, watermark, width, height, env0) {
@@ -263,6 +309,7 @@ const cluster = require('cluster');
 const numCPUs = +process.env['CPU_COUNT'] || require('os').cpus().length;
 
 if (numCPUs == 1) {
+  console.log('running with one CPU, only');
   runServer(process.argv);
 } else {
   if (cluster.isMaster) {

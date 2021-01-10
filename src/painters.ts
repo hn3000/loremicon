@@ -92,11 +92,11 @@ export function renderGradient(pctx: IPainterContext) {
 export function renderPoly(pctx: IPainterContext) {
   const { context, u, xs, ys } = pctx;
 
-  context.fillStyle = '#'+u.repeat(u.b(u.rndHex,2),3);
+  context.fillStyle = u.rndColor();
   context.fillRect(0,0,xs,ys);
 
-  context.fillStyle = '#'+u.repeat(u.b(u.rndHex,2),3);
-  context.strokeStyle = '#'+u.repeat(u.b(u.rndHex,2),3);
+  context.fillStyle = u.rndColor();
+  context.strokeStyle = u.rndColor();
   context.beginPath();
   const count = u.rnd(3,9);
   for (var i = 0; i < count; ++i) {
@@ -113,7 +113,7 @@ export function renderPoly(pctx: IPainterContext) {
 export function renderRect(pctx: IPainterContext) {
   const { context, u, xs, ys } = pctx;
 
-  context.fillStyle = '#'+u.repeat(u.b(u.rndHex,2),3);
+  context.fillStyle = u.rndColor();
   context.fillRect(0,0,xs,ys);
 
   const count = u.rnd(1,9);
@@ -123,8 +123,8 @@ export function renderRect(pctx: IPainterContext) {
     const w = u.rnd(xs);
     const h = u.rnd(ys);
 
-    context.fillStyle = '#'+u.repeat(u.b(u.rndHex,2),3);
-    context.strokeStyle = '#'+u.repeat(u.b(u.rndHex,2),3);
+    context.fillStyle = u.rndColor();
+    context.strokeStyle = u.rndColor();
     context.fillRect(x,y,w,h);
     context.strokeRect(x,y,w,h);
   }

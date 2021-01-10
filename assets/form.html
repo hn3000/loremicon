@@ -77,6 +77,7 @@
         <span id="urlprefix"></span>
         <span>
         <select id="style">
+          <option>drnd</option>
           <option>grad</option>
           <option>poly</option>
           <option>ngon</option>
@@ -138,12 +139,15 @@
     <script>
 
       const presets = [
-        //{ label: "rndm", style: "rndm", x:128, y: 128 },
-        { label: "rect", style: "rect", x:128, y: 128, format: 'png' },
-        { label: "poly", style: "poly", x:128, y: 128, format: 'png' },
-        { label: "ngon", style: "poly", x:128, y: 128, format: 'png' },
-        { label: "grad", style: "grad", x:128, y: 128, format: 'jpeg' },
-        { label: "pxls", style: "pxls", x:128, y: 128, format: 'jpeg' },
+        { label: "drnd (Random but seed-dependent style)", style: "drnd", x:128, y: 128, format: 'png' },
+        { label: "rect (Rectangles)", style: "rect", x:128, y: 128, format: 'png' },
+        { label: "poly (Polygons)", style: "poly", x:128, y: 128, format: 'png' },
+        { label: "ngon (convex N-gons)", style: "ngon", x:128, y: 128, format: 'png' },
+        { label: "grad (gradients)", style: "grad", x:128, y: 128, format: 'jpeg' },
+        { label: "pxls (Pixel Noise)", style: "pxls", x:128, y: 128, format: 'jpeg' },
+        { label: "dclr (Dark color mix)", style: "dclr", x:128, y: 128, format: 'jpeg' },
+        { label: "lclr (Light color mix)", style: "lclr", x:128, y: 128, format: 'jpeg' },
+        { label: "rndm (Random style, Keep! is broken)", style: "rndm", x:128, y: 128, format: 'png' },
       ];
       function $1(x) { return document.querySelector(x); }
       function $$(x, c) { 
