@@ -44,10 +44,10 @@ where the colors are either 3 or 6 hexadecimal digits (when separated with comma
 
 So these are equivalent:
 
-1. ![0ff,00f](http://localhost:3478/ngon/16/16/64110306/colors=0ff,00f/jpeg) `/ngon/128/128/64110306/colors=0ff,00f/jpeg` 
-1. ![cyan;blue](http://localhost:3478/ngon/16/16/64110306/colors=cyan;blue/jpeg) `/ngon/128/128/64110306/palette=cyan;blue/jpeg`
-1. ![rgb(0 255 255);rgb(0 0 255)](http://localhost:3478/ngon/16/16/64110306/colors=cyan;blue/jpeg) `/ngon/128/128/64110306/palette=rgb(0 255 255);rgb(0 0 255)/jpeg`
-1. ![rgb(0,255,255);rgb(0,0,255)](http://localhost:3478/ngon/16/16/64110306/colors=cyan;blue/jpeg) `/ngon/128/128/64110306/palette=rgb(0,255,255);rgb(0,0,255)/jpeg`
+1. ![0ff,00f](https://loremicon.com/ngon/16/16/64110306/colors=0ff,00f/jpeg) `/ngon/128/128/64110306/colors=0ff,00f/jpeg` 
+1. ![cyan;blue](https://loremicon.com/ngon/16/16/64110306/colors=cyan;blue/jpeg) `/ngon/128/128/64110306/palette=cyan;blue/jpeg`
+1. ![rgb(0 255 255);rgb(0 0 255)](https://loremicon.com/ngon/16/16/64110306/colors=cyan;blue/jpeg) `/ngon/128/128/64110306/palette=rgb(0 255 255);rgb(0 0 255)/jpeg`
+1. ![rgb(0,255,255);rgb(0,0,255)](https://loremicon.com/ngon/16/16/64110306/colors=cyan;blue/jpeg) `/ngon/128/128/64110306/palette=rgb(0,255,255);rgb(0,0,255)/jpeg`
 
 Note: the spaces in the third example must, of course, be escaped as %20, but browsers should also accept commas as in the fourth example.
 
