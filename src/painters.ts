@@ -33,10 +33,11 @@ export function renderPixels(pctx: IPainterContext) {
   var data = imagedata.data;
   for (var y = 0; y < ys; ++y) {
     for (var x = 0; x < xs; ++x) {
-      data[i++] = u.rnd(0, 255);
-      data[i++] = u.rnd(0, 255);
-      data[i++] = u.rnd(0, 255);
-      data[i++] = 255; // alpha = 1
+      const color = u.rndColorRGB();
+      data[i++] = color.r;
+      data[i++] = color.g;
+      data[i++] = color.b;
+      data[i++] = color.a;
     }
   }
 

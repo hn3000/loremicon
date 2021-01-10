@@ -1,10 +1,56 @@
 
 # Simple Lorem Icon service
 
+TL;DR:
+
+- bookmarkable image urls
+- pseudo random images
 - uses node-canvas
 - simple frontend to try out the service is at /help-me/
 - if you want really permanent permalinks to the images, 
   you should host this yourself somewhere
+
+
+A service to create random but bookmarkable placeholder images.
+
+The service takes a number of parameters, you can see the structure of
+the image URLs on the page at `/help-me/` (it is linked from the index page).
+
+# Image URL patterns
+
+These URL patterns will return an image, the shorter URL patterns
+always redirect to the fully specified format.
+
+- Just Dimensions: `/:x/:y`
+- Style + Dimensions: `/:style/:x/:y`
+- Style, Dimensions, Format: `/:style/:x/:y/:format`
+- Fully specified: `/:style/:x/:y/:seed/:format`
+
+To get additional control over the generated image, some part
+of the randomly determined image parameters can be overridden
+using the `:extra` part of the image URL (and this is only supported
+as an extension of the fully specified form, for now):
+
+- Extended specification: `/:style/:x/:y/:seed/:extra/:format`
+
+The `:extra` can be specified as either of these:
+
+- `colors=&lt;hexcolor&gt;,&lt;hexcolor&gt;,...`
+- `colors=&lt;color&gt;;&lt;color&gt;;...`
+- `palette=&lt;hexcolor&gt;,&lt;hexcolor&gt;,...`
+- `palette=&lt;color&gt;;&lt;color&gt;;...`
+
+where the colors are either 3 or 6 hexadecimal digits (when separated with commas) or just general color strings (when separated with semicolons).
+
+So these are equivalent:
+
+1. ![0ff,00f](http://localhost:3478/ngon/16/16/64110306/colors=0ff,00f/jpeg) `/ngon/128/128/64110306/colors=0ff,00f/jpeg` 
+1. ![cyan;blue](http://localhost:3478/ngon/16/16/64110306/colors=cyan;blue/jpeg) `/ngon/128/128/64110306/palette=cyan;blue/jpeg`
+1. ![rgb(0 255 255);rgb(0 0 255)](http://localhost:3478/ngon/16/16/64110306/colors=cyan;blue/jpeg) `/ngon/128/128/64110306/palette=rgb(0 255 255);rgb(0 0 255)/jpeg`
+1. ![rgb(0,255,255);rgb(0,0,255)](http://localhost:3478/ngon/16/16/64110306/colors=cyan;blue/jpeg) `/ngon/128/128/64110306/palette=rgb(0,255,255);rgb(0,0,255)/jpeg`
+
+Note: the spaces in the third example must, of course, be escaped as %20, but browsers should also accept commas as in the fourth example.
+
 
 # Building
 
@@ -14,7 +60,7 @@ Docker image uses Alpine Linux and node 14.
 
 
 
-# Random examples
+# More examples
 
 ![/poly/128/128/577251899890/jpg](https://loremicon.com/poly/128/128/577251899890/jpg)<br>`/poly/128/128/577251899890/jpg`
 

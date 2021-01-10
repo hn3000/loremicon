@@ -68,21 +68,78 @@ export class Util {
     let override = null;
     const { colors, palette } = this?._options;
     if (colors?.length) {
-      const colorIndex = this._colorIndex++;
-      override = '#'+colors[colorIndex];
+      const colorIndex = this._colorIndex++ % colors.length;
+      override = colors[colorIndex];
     } else if (palette?.length) {
       const colorIndex = u.rndPreview(229*palette.length) % palette.length;
-      override = '#'+palette[colorIndex];
+      override = palette[colorIndex];
     }
     const color = '#'+u.repeat(u.b(u._rndHex, 2), 3);
 
     return override ?? color;
   }
 
+  rndColorRGB(): {r:number,g:number,b:number,a:number} {
+    const u = this;
+    let override = null;
+    const { colors, palette } = this?._options;
+    if (colors?.length) {
+      const colorIndex = this._colorIndex++ % colors.length;
+      override = colors[colorIndex];
+    } else if (palette?.length) {
+      const colorIndex = u.rndPreview(229*palette.length) % palette.length;
+      override = palette[colorIndex];
+    }
+
+    let r,g,b,a;
+    r = u.rnd(255);
+    g = u.rnd(255);
+    b = u.rnd(255);
+    a = 255;
+    if (override) {
+      [ r,g,b,a ] = parseColor(override);
+    }
+    return { r,g,b,a };
+  }
 
   private _seed: number;
   private _current: number;
 
   private _options: IUtilOptions;
   private _colorIndex: number;
+}
+
+function parseColor(color: string) {
+  let r,g,b,a;
+
+  if (color.startsWith('#')) {
+    switch (color.length) {
+      case 4:
+        r = Number.parseInt(color.substring(1,2), 16)*0x11;
+        g = Number.parseInt(color.substring(2,3), 16)*0x11;
+        b = Number.parseInt(color.substring(3,4), 16)*0x11;
+        a = 0xff;
+        break;
+      case 5:
+        r = Number.parseInt(color.substring(1,2), 16)*0x11;
+        g = Number.parseInt(color.substring(2,3), 16)*0x11;
+        b = Number.parseInt(color.substring(3,4), 16)*0x11;
+        a = Number.parseInt(color.substring(4,5), 16)*0x11;
+        break;
+      case 7:
+        r = Number.parseInt(color.substring(1,3), 16);
+        g = Number.parseInt(color.substring(3,5), 16);
+        b = Number.parseInt(color.substring(5,7), 16);
+        a = 0xff;
+        break;
+      case 9:
+        r = Number.parseInt(color.substring(1,3), 16);
+        g = Number.parseInt(color.substring(3,5), 16);
+        b = Number.parseInt(color.substring(5,7), 16);
+        a = Number.parseInt(color.substring(7,9), 16);
+        break;
+    }
+  }
+
+  return [ r,g,b,a ];
 }

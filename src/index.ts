@@ -88,7 +88,11 @@ function runServer(argv) {
     for (let e of extra) {
       if (-1 != e.indexOf('=')) {
         let [k,v] = e.split('=');
-        extraParams[k] = v.split(',');
+        if (-1 !== v.indexOf(';')) {
+          extraParams[k] = v.split(';');
+        } else if (-1 !== v.indexOf(',')) {
+          extraParams[k] = v.split(',').map(x => `#${x}`);
+        }
       }
     }
     if (Object.keys(extraParams).length) {
@@ -158,12 +162,8 @@ function createImage(painter, [writer, type], req: express.Request, res: express
   const start = Date.now();
   try {
     //console.log(req.path, req.params, req.body);
-    const { x, y, seed, colors } = req.params;
-  
-    if (colors) {
-      console.log('got colors: ', colors);
-    }
-  
+    const { x, y, seed } = req.params;
+
     let { width, height } = dimensionProxy(req.body || {}, { width: x, height: y });
     const w = width.value();
     const h = height.value();
