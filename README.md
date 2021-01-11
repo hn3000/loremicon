@@ -51,6 +51,54 @@ So these are equivalent:
 
 Note: the spaces in the third example must, of course, be escaped as %20, but browsers should also accept commas as in the fourth example.
 
+# Styles
+
+The following examples all use the same seed, so will not change on reload:
+
+![/grad/128/128/577251899890/jpg](https://loremicon.com/grad/128/128/577251899890/jpg)
+<br>`/grad/128/128/577251899890/jpg`
+<br>grad: Random number of gradient stops, random angle
+
+![/poly/128/128/577251899890/jpg](https://loremicon.com/poly/128/128/577251899890/jpg)
+<br>`/poly/128/128/577251899890/jpg`
+<br>poly: Polygon, random number of vertices
+
+![/ngon/128/128/577251899890/jpg](https://loremicon.com/ngon/128/128/577251899890/jpg)
+<br>`/ngon/128/128/577251899890/jpg`
+<br>ngon: Regular N-Gon, random number of edges / corners
+
+![/rect/128/128/577251899890/jpg](https://loremicon.com/rect/128/128/577251899890/jpg)
+<br>`/rect/128/128/577251899890/jpg`
+<br>rect: Random number of rectangles at random coordinates
+
+![/pxls/128/128/577251899890/jpg](https://loremicon.com/pxls/128/128/577251899890/jpg)
+<br>`/pxls/128/128/577251899890/jpg`
+<br>pxls: Just random noise, more useful with color palette
+
+![/lclr/128/128/577251899890/jpg](https://loremicon.com/lclr/128/128/577251899890/jpg)
+<br>`/lclr/128/128/577251899890/jpg`
+<br>lclr: light colors (an experiment with color)
+
+![/dclr/128/128/577251899890/jpg](https://loremicon.com/dclr/128/128/577251899890/jpg)
+<br>`/dclr/128/128/577251899890/jpg`
+<br>dclr: dark colors (another experiment with colors)
+
+![/mclr/128/128/577251899890/jpg](https://loremicon.com/mclr/128/128/577251899890/jpg)
+<br>`/mclr/128/128/577251899890/jpg`
+<br>mclr: mixed colors (yet another experiment with colors)
+
+## Random Styles
+
+Two kinds of random:
+
+![/drnd/128/128/577251899890/jpg](https://loremicon.com/drnd/128/128/577251899890/jpg)
+<br>`/drnd/128/128/577251899890/jpg`
+<br>(Deterministic based on seed)
+
+![/rndm/128/128/577251899890/jpg](https://loremicon.com/rndm/128/128/577251899890/jpg)
+<br>`/rndm/128/128/577251899890/jpg`
+<br>(Completely random, does not depend on seed, different every time, but always 
+one of the above since it uses the same seed)
 
 # Building
 
@@ -68,6 +116,13 @@ Docker image uses Alpine Linux and node 14.
 
 ![/poly/128/128/486310823847/jpg](https://loremicon.com/poly/128/128/486310823847/jpg)<br>`/poly/128/128/486310823847/jpg`
 
+![/poly/128/128/13188643/png](https://loremicon.com/poly/128/128/13188643/png)<br>`/poly/128/128/13188643/png`
+
+![/poly/128/128/13188643/colors=red;yellow/png](https://loremicon.com/poly/128/128/13188643/colors=red;yellow/png)<br>`/poly/128/128/13188643/colors=red;yellow/png`
+
+![/pxls/128/128/64110306/colors=333,343,353,363,373,383,393,3a3/jpeg](https://loremicon.com/pxls/128/128/64110306/colors=333,343,353,363,373,383,393,3a3/jpeg)<br>`/pxls/128/128/64110306/colors=333,343,353,363,373,383,393,3a3/jpeg`
+
+![/pxls/128/128/64110306/palette=333,343,353,363,373,383,393,3a3/jpeg](https://loremicon.com/pxls/128/128/64110306/palette=333,343,353,363,373,383,393,3a3/jpeg)<br>`/pxls/128/128/64110306/palette=333,343,353,363,373,383,393,3a3/jpeg`
 
 # Controlling the colors
 
