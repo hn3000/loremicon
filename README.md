@@ -124,6 +124,10 @@ Docker image uses Alpine Linux and node 14.
 
 ![/pxls/128/128/64110306/palette=333,343,353,363,373,383,393,3a3/jpeg](https://loremicon.com/pxls/128/128/64110306/palette=333,343,353,363,373,383,393,3a3/jpeg)<br>`/pxls/128/128/64110306/palette=333,343,353,363,373,383,393,3a3/jpeg`
 
+![/grad/128/128/26798732/colors=lime;aqua;cornflowerblue;coral;hotpink/png](https://loremicon.com/grad/128/128/26798732/colors=lime;aqua;cornflowerblue;coral;hotpink/png)<br>`/grad/128/128/26798732/colors=lime;aqua;cornflowerblue;coral;hotpink/png`
+
+![/pxls/128/128/26798732/colors=lime;aqua;cornflowerblue;coral;hotpink/png](https://loremicon.com/pxls/128/128/26798732/colors=lime;aqua;cornflowerblue;coral;hotpink/png)<br>`/pxls/128/128/26798732/colors=lime;aqua;cornflowerblue;coral;hotpink/png`
+
 # Controlling the colors
 
 In order to replace the randomly generated colors with a set
