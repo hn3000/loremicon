@@ -1,5 +1,5 @@
 
-import { Util } from '../src/util';
+import { parseColor, Util } from '../src/util';
 
 import { TestClass } from "tsunit.external/tsUnitAsync";
 
@@ -86,5 +86,71 @@ export class UtilTest extends TestClass {
         this.isTrue(false, "expected color, got "+rndColor);
       }
     }
+  }
+
+  testParseRGB() {
+    let color = parseColor('rgb(120 121 123)');
+    this.areIdentical(120, color[0]);
+    this.areIdentical(121, color[1]);
+    this.areIdentical(123, color[2]);
+    this.areIdentical(255, color[3]);
+    color = parseColor('rgb(60% 65% 70% / 125)');
+    this.areIdentical(153, color[0]);
+    this.areIdentical(166, color[1]);
+    this.areIdentical(179, color[2]);
+    this.areIdentical(125, color[3]);
+  }
+  testParseRGBA() {
+    let color = parseColor('rgba(120 121 123 / 50%)');
+    this.areIdentical(120, color[0]);
+    this.areIdentical(121, color[1]);
+    this.areIdentical(123, color[2]);
+    this.areIdentical(128, color[3]);
+    color = parseColor('rgba(120 121 123)');
+    this.areIdentical(120, color[0]);
+    this.areIdentical(121, color[1]);
+    this.areIdentical(123, color[2]);
+    this.areIdentical(255, color[3]);
+  }
+  testParseHexColors() {
+    let color = parseColor('#123');
+    this.areIdentical(0x11, color[0]);
+    this.areIdentical(0x22, color[1]);
+    this.areIdentical(0x33, color[2]);
+    this.areIdentical(0xff, color[3]);
+    color = parseColor('#123a');
+    this.areIdentical(0x11, color[0]);
+    this.areIdentical(0x22, color[1]);
+    this.areIdentical(0x33, color[2]);
+    this.areIdentical(0xaa, color[3]);
+    color = parseColor('#123456');
+    this.areIdentical(0x12, color[0]);
+    this.areIdentical(0x34, color[1]);
+    this.areIdentical(0x56, color[2]);
+    this.areIdentical(0xff, color[3]);
+    color = parseColor('#123456cd');
+    this.areIdentical(0x12, color[0]);
+    this.areIdentical(0x34, color[1]);
+    this.areIdentical(0x56, color[2]);
+    this.areIdentical(0xcd, color[3]);
+  }
+  testParseNamedColors() {
+    let color = parseColor('not-a-colorname');
+    this.areIdentical(0, color[0]);
+    this.areIdentical(0, color[1]);
+    this.areIdentical(0, color[2]);
+    this.areIdentical(0, color[3]);
+
+    color = parseColor('magenta');
+    this.areIdentical(255, color[0]);
+    this.areIdentical(0, color[1]);
+    this.areIdentical(255, color[2]);
+    this.areIdentical(255, color[3]);
+
+    color = parseColor('hotpink');
+    this.areIdentical(0xff, color[0]);
+    this.areIdentical(0x69, color[1]);
+    this.areIdentical(0xb4, color[2]);
+    this.areIdentical(255, color[3]);
   }
 }
