@@ -3,7 +3,7 @@ import * as express from 'express';
 import * as path from 'path';
 
 import { PAINTERS } from './painters';
-import { UnitFactorsDefault, dimensionProxy } from './dimension';
+import { unitFactors, dimensionProxy } from './dimension';
 import { box, position } from './position';
 import { Util } from './util';
 
@@ -162,9 +162,9 @@ function createImage(painter, [writer, type], req: express.Request, res: express
   const start = Date.now();
   try {
     //console.log(req.path, req.params, req.body);
-    const { x, y, seed } = req.params;
+    const { x, y, seed, format } = req.params;
 
-    let { width, height } = dimensionProxy(req.body || {}, { width: x, height: y });
+    let { width, height } = dimensionProxy(req.body || {}, { width: x, height: y }, unitFactors.bind(null, format));
     const w = width.value();
     const h = height.value();
     const area = w * h;
@@ -182,16 +182,16 @@ function createImage(painter, [writer, type], req: express.Request, res: express
   
       const u = new Util(+seed, utilOptions);
       const env0 = { 
-        vh: height.value()/100, 
+        vh: height.value() / 100, 
         vw: width.value() / 100, 
         vmin: Math.min(height.value(), width.value()) / 100, 
         vmax: Math.max(height.value(), width.value()) / 100,
-        ...UnitFactorsDefault,
+        ...unitFactors(format),
         seed: (u as any)._seed
       };
   
     
-      const painted = painter({ context, u, xs: x, ys: y }, req, res);
+      const painted = painter({ context, u, xs: w, ys: h }, req, res);
       if (painted !== 'no-output') {
         const watermark = WATERMARK;
         maybeRenderWatermark(req, canvas, watermark, width, height, env0);

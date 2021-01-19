@@ -12,6 +12,17 @@ export var UnitFactorsLength: IUnitFactors = {
   pt: 96 / 72,
   px: 1.0
 };
+
+export var UnitFactorsLengthPDF: IUnitFactors = {
+  "1": 1.0,
+  in: 72,
+  cm: 72 / 2.54,
+  mm: 72 / 25.4,
+  Q: 72 / 25.4 / 4, // quarter mm
+  pc: 72 / 6,
+  pt: 72 / 72,
+  px: 1.0
+};
 export var UnitFactorsAngle: IUnitFactors = {
   "1": 1.0,
   rad: 1,
@@ -24,6 +35,18 @@ export var UnitFactorsDefault: IUnitFactors = {
   ...UnitFactorsAngle,
   ...UnitFactorsLength
 };
+
+export var UnitFactorsPDF: IUnitFactors = {
+  ...UnitFactorsAngle,
+  ...UnitFactorsLengthPDF
+};
+
+export function unitFactors(format: string) {
+  if (format === 'pdf') {
+    return UnitFactorsPDF;
+  }
+  return UnitFactorsDefault;
+}
 
 export type DimensionSpec = IDimension | string | number;
 
