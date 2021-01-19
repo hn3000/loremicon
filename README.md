@@ -5,10 +5,10 @@ TL;DR:
 
 - bookmarkable image urls
 - pseudo random images
-- uses node-canvas
+- uses `node-canvas` and `express`
 - simple frontend to try out the service is at /help-me/
 - if you want really permanent permalinks to the images, 
-  you should host this yourself somewhere
+  you should host this yourself somewhere, a dockerfile is included
 
 
 A service to create random but bookmarkable placeholder images.
@@ -131,14 +131,6 @@ Two kinds of random:
 <br>(Completely random, does not depend on seed, different every time, but always 
 one of the above since it uses the same seed)
 
-# Building
-
-Currently builds on macOS using node 13.
-
-Docker image uses Alpine Linux and node 14.
-
-
-
 # More examples
 
 ![/poly/128/128/577251899890/jpg](https://loremicon.com/poly/128/128/577251899890/jpg)<br>`/poly/128/128/577251899890/jpg`
@@ -190,3 +182,10 @@ The difference between the two is how colors are selected:
 
 ![/rect/128/128/26798739/palette=f34,43f,567,3f4/png](https://loremicon.com/rect/128/128/26798739/palette=f34,43f,567,3f4/png)<br>`/rect/128/128/26798739/palette=f34,43f,567,3f4/png`
 
+
+
+# Building
+
+Currently builds on macOS using node 13.
+
+Docker image uses Alpine Linux and node 14.
