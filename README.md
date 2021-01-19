@@ -43,7 +43,7 @@ Supported `:format` values:
 - `jpeg` -- lossy compression, ideal for larger gradient images
 - `jpg` -- same as `jpeg`
 - `svg` -- vector format, pre-sized to given size
-- `pdf` -- your favourite paper replacing format
+- `pdf` -- your favourite paper replacement format
 
 These will redirect you to a data: URL containing the generated image:
 
