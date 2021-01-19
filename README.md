@@ -26,6 +26,37 @@ always redirect to the fully specified format.
 - Style, Dimensions, Format: `/:style/:x/:y/:format`
 - Fully specified: `/:style/:x/:y/:seed/:format`
 
+Dimensions (`:x` and `:y`) can be specified without unit, which will be taken as
+`px`.
+
+Other supported units are:
+
+ - `pt` -- either 96ppi or 72dpi (for :format = pdf)
+ - `in` -- either 96pixels or 72pixels (for :format = pdf)
+ - `cm` -- converted at 2.54 cm / in
+ - `mm` -- converted at 25.4 cm / in
+ - `px` -- same as not specifying a unit
+
+Supported `:format` values:
+
+- `png` -- lossless compression, ideal for icons; the default value
+- `jpeg` -- lossy compression, ideal for larger gradient images
+- `jpg` -- same as `jpeg`
+- `svg` -- vector format, pre-sized to given size
+- `pdf` -- your favourite paper replacing format
+
+These will redirect you to a data: URL containing the generated image:
+
+- `datapng` -- convert image to png and encode as data: url
+- `datajpeg` -- convert image to jpeg and encode as data: url
+- `data` -- convert image to png and jpeg and redirect to the shorter one encoded as data: url
+
+Examples:
+
+- <https://loremicon.com/ngon/16/16/64110306/jpeg> (16x16 pixel jpeg)
+- <https://loremicon.com/ngon/297mm/210mm/64110306/pdf> (a4 pdf)
+- <https://loremicon.com/grad/20pt/20pt/64110306/svg> (20pt svg)
+
 To get additional control over the generated image, some part
 of the randomly determined image parameters can be overridden
 using the `:extra` part of the image URL (and this is only supported
