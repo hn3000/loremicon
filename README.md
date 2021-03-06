@@ -141,6 +141,8 @@ one of the above since it uses the same seed)
 
 ![/poly/128/128/13188643/png](https://loremicon.com/poly/128/128/13188643/png)<br>`/poly/128/128/13188643/png`
 
+![/grad/128/128/14942979907/jpg](https://loremicon.com/grad/128/128/14942979907/jpg)<br>`/grad/128/128/14942979907/jpg`
+
 ![/poly/128/128/13188643/colors=red;yellow/png](https://loremicon.com/poly/128/128/13188643/colors=red;yellow/png)<br>`/poly/128/128/13188643/colors=red;yellow/png`
 
 ![/pxls/128/128/64110306/colors=333,343,353,363,373,383,393,3a3/jpeg](https://loremicon.com/pxls/128/128/64110306/colors=333,343,353,363,373,383,393,3a3/jpeg)<br>`/pxls/128/128/64110306/colors=333,343,353,363,373,383,393,3a3/jpeg`
