@@ -1,6 +1,6 @@
 {
   "name": "loremicon",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "",
   "repository": {
     "url": "https://github.com/hn3000/loremicon",
@@ -15,6 +15,7 @@
     "build": "webpack -c webpack.config.js",
     "webpack": "webpack-dev-server -c webpack.dev.js",
     "docker": "docker build . -t loremicon",
+    "docker:node-latest": "docker build . -f dockerfile.latest -t loremicon:node-latest",
     "predocker-run": "npm run test",
     "docker-run": "docker-compose up -d --build",
     "pretest": "tsc -p tsconfig.test.json",
