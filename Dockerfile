@@ -50,4 +50,6 @@ COPY assets/* ./assets/
 
 EXPOSE 3478
 
-CMD node --icu-data-dir=node_modules/full-icu out/index.js || sleep 1800
+#CMD node --icu-data-dir=node_modules/full-icu out/index.js || sleep 1800
+
+CMD node --icu-data-dir=node_modules/full-icu out/index.js
