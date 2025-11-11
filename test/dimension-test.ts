@@ -1,7 +1,7 @@
 
-import { dimension, dimensionProxy, Dimension, dimensionF } from '../src/dimension';
+import { dimension, dimensionProxy, Dimension, dimensionF } from '../src/dimension.js';
 
-import { TestClass } from "tsunit.external/tsUnitAsync";
+import { TestClass } from "@hn3000/tsunit-async";
 
 
 export class DimensionTest extends TestClass {

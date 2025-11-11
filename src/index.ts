@@ -1,11 +1,11 @@
-import * as c from 'canvas';
-import * as express from 'express';
-import * as path from 'path';
+import { PAINTERS } from './painters.js';
+import { unitFactors, dimensionProxy } from './dimension.js';
+import { box, position } from './position.js';
+import { Util } from './util.js';
 
-import { PAINTERS } from './painters';
-import { unitFactors, dimensionProxy } from './dimension';
-import { box, position } from './position';
-import { Util } from './util';
+import * as c from 'canvas';
+import express, { Request, Response } from 'express';
+import * as path from 'path';
 
 function runServer(argv) {
   console.log("starting express");
@@ -13,23 +13,28 @@ function runServer(argv) {
 
   app.use(express.json());
 
-  app.get("/", function(req, res) {
-    res.sendFile("index.html", { root: path.resolve(__dirname, '../assets') });
+  app.use((rq,rs, next) => {
+    rq.props = {};
+    next();
   });
-  app.get("/b/:file?", function(req, res) {
+
+  app.get("/", function(req, res) {
+    res.sendFile("index.html", { root: path.resolve(import.meta.dirname, '../assets') });
+  });
+  app.get("/b{/:file}", function(req, res) {
     if (req.url === '/b') {
       res.redirect('/b/');
     }
     const { file='browser.html' } = req.params;
-    res.sendFile(file, { root: path.resolve(__dirname, '../dist') });
+    res.sendFile(file, { root: path.resolve(import.meta.dirname, '../dist') });
   });
   app.get("/help-me/example/:json", function(req, res) {
     //console.log(`GET ${req.params.json}`);
-    res.sendFile(req.params.json, { root: path.resolve(__dirname, '../example') });
+    res.sendFile(req.params.json, { root: path.resolve(import.meta.dirname, '../example') });
   });
   app.get("/help-me", function(req, res) {
     if (req.originalUrl.endsWith('/')) {
-      res.sendFile("form.html", { root: path.resolve(__dirname, '../assets') });
+      res.sendFile("form.html", { root: path.resolve(import.meta.dirname, '../assets') });
     } else {
       res.setHeader('Location', '/help-me/');
       res.sendStatus(301);
@@ -49,7 +54,13 @@ function runServer(argv) {
     jpeg: [writeJPEG, 'image'],
     data: [writeDATA, 'image'],
     datapng: [writeDATAPNG, 'image'],
-    datajpeg: [writeDATAJPEG, 'image']
+    datajpeg: [writeDATAJPEG, 'image'],
+    hexpng: [writeHexPNG, 'image'],
+    urlpdf: [writeUrl, 'url'],
+    urlsvg: [writeUrl, 'url'],
+    urlpng: [writeUrl, 'url'],
+    urljpg: [writeUrl, 'url'],
+    urljpeg: [writeUrl, 'url'],
   };
 
   app.get("/favicon.ico", function handleFavicon(req, res) {
@@ -62,11 +73,19 @@ function runServer(argv) {
     res.setHeader('cache-control', 'no-cache');
     res.redirect(`/poly/${x}/${y}/${seed}/png`);
   });
-  app.get("/:style/:x/:y/", function handleStyleXY(req, res) {
-    const { style, x,y } = req.params;
+  app.get("/:a/:b/:c/", function handleStyleXY(req, res) {
+    const { a, b, c } = req.params;
     const seed = Math.ceil(Math.random()*1e8);
     res.setHeader('cache-control', 'no-cache');
-    res.redirect(`/${style}/${x}/${y}/${seed}/png`);
+
+    if (Number.parseInt(a) && c in formats) {
+      const [ x, y, format ] = [a,b,c];
+      res.redirect(`/drnd/${x}/${y}/${seed}/${format}`);
+    } else {
+      const [ style, x, y ] = [a,b,c];
+      res.redirect(`/${style}/${x}/${y}/${seed}/png`);
+    } 
+
   });
   app.get("/:style/:x/:y/:format", function handleStyleXYFormat(req, res) {
     const { style, x,y, format } = req.params;
@@ -80,7 +99,7 @@ function runServer(argv) {
   app.get("/:style/:x/:y/:seed/:extra1/:extra2/:format",  handleStyleXYSeedFormat);
   app.get("/:style/:x/:y/:seed/:extra1/:extra2/:extra3/:format",  handleStyleXYSeedFormat);
 
-  function handleStyleXYSeedFormat(req, res) {
+  function handleStyleXYSeedFormat(req: Request, res: Response) {
     const { extra1, extra2, extra3 } = req.params;
 
     const extraParams = {} as { [key:string]: string|string[]};
@@ -92,6 +111,12 @@ function runServer(argv) {
           extraParams[k] = v.split(';');
         } else if (-1 !== v.indexOf(',')) {
           extraParams[k] = v.split(',').map(x => `#${x}`);
+        } else {
+          try {
+            extraParams[k] = JSON.parse(v);
+          } catch {
+            extraParams[k] = v;
+          }
         }
       }
     }
@@ -102,7 +127,7 @@ function runServer(argv) {
     const styleFun = styles[req.params.style];
     const fmtq = (req.params.format  || 'jpg,0.3').split(',');
     const fmt = fmtq[0];
-    const q = fmtq[1] || 0.3;
+    const q = Number.parseFloat(fmtq[1]) || 0.3;
     const format = formats[fmt];
 
     if (styleFun && format) {
@@ -173,7 +198,7 @@ function createImage(painter, [writer, type], req: express.Request, res: express
     } else {
       let xs = width.value();
       let ys = height.value();
-      let canvas = new c.Canvas(xs, ys, type);
+      let canvas = new c.Canvas(xs, ys, type != 'url' ? type : 'image');
       const context = canvas.getContext('2d');
       context.save();
 
@@ -189,11 +214,12 @@ function createImage(painter, [writer, type], req: express.Request, res: express
         ...unitFactors(format),
         seed: (u as any)._seed
       };
-  
-    
+      req.props['format'] = type;
+      req.props['url'] = `${req.protocol}://${req.get('Host')}${req.originalUrl}`;
+
       const painted = painter({ context, u, xs: w, ys: h }, req, res);
       if (painted !== 'no-output') {
-        const watermark = WATERMARK;
+        const watermark = extraParams?.watermark ?? WATERMARK;
         maybeRenderWatermark(req, canvas, watermark, width, height, env0);
     
         writer(canvas, res, q);
@@ -249,6 +275,9 @@ function maybeRenderWatermark(req, canvas, watermark, width, height, env0) {
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
     ctx.fillText(url, pos.x(), pos.y(), wmbox.width());
+    console.log('rendered watermark', watermark);
+  } else {
+    console.log('skipped watermark', watermark, WATERMARK);
   }
 }
 
@@ -304,16 +333,43 @@ function writeDATAJPEG(canvas: c.Canvas, res, q=0.3) {
   res.redirect(dataUrl);
 }
 
+const hexDigits = '0123456789abcdef';
+function toHex(x: number) {
+  return hexDigits[(x >>> 4) & 0xf] + hexDigits[x & 0xf];
+}
 
-const cluster = require('cluster');
-const numCPUs = +process.env['CPU_COUNT'] || require('os').cpus().length;
+function writeHexPNG(canvas: c.Canvas, res) {
+  //let dataUrl = canvas.toDataURL('image/png');
+  let buffer = canvas.toBuffer();
+  let hexBuffer = []
+  buffer.forEach(x => hexBuffer.push(toHex(x)));
+  res.type('text/plain');
+  res.send(hexBuffer.join(''));
+}
+
+function writeUrl(canvas: c.Canvas, res: Response) {
+  //let dataUrl = canvas.toDataURL('image/png');
+  //let buffer = canvas.toBuffer();
+  //let hexBuffer = []
+  //buffer.forEach(x => hexBuffer.push(toHex(x)));
+  res.type('text/plain');
+  //res.send(res.get('Location').replace('url', ''));
+  res.send(res.req.props['url'].replace('url', ''));
+  //res.send(hexBuffer.join(''));
+}
+
+
+import cluster from 'node:cluster';
+import * as os from 'node:os';
+import { ServerResponse } from 'node:http';
+const numCPUs = +process.env['CPU_COUNT'] || os.cpus().length;
 
 if (numCPUs == 1) {
   console.log('running with one CPU, only');
   runServer(process.argv);
 } else {
-  if (cluster.isMaster) {
-    console.log(`Master ${process.pid} is starting ${numCPUs} worker${numCPUs == 1 ? '' : 's'}`);
+  if (cluster.isPrimary) {
+    console.log(`Primary ${process.pid} is starting ${numCPUs} worker${numCPUs == 1 ? '' : 's'}`);
   
     // Fork workers.
     for (let i = 0; i < numCPUs; i++) {

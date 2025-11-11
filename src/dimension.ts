@@ -74,8 +74,12 @@ abstract class DimensionBase implements IDimension {
     return new DimensionRelative(this, dimension(delta).neg());
   }
 
-  resolve(env: IUnitFactors) {
+  resolve(env: IUnitFactors): IDimension {
     return new DimensionResolved(this, env);
+  }
+
+  toString() {
+    return `${this.number}${this.unit}`;
   }
 }
 
@@ -128,12 +132,17 @@ class DimensionResolved extends DimensionBase implements IDimension {
     return result;
   }
 
-  resolve(env: IUnitFactors): this {
+  resolve(env: IUnitFactors): IDimension {
     if (env === this._env) {
-      return this;
+      return this as IDimension;
     }
-    return super.resolve(env);
+    return this._dim.resolve(env);
   }
+
+  toString() {
+    return `${this.number}${this.unit} = ${this.value()}`;
+  }
+
 
   private _dim: IDimension;
   private _env: IUnitFactors;
@@ -305,7 +314,7 @@ export function dimensionProxy<X, D, K extends keyof (X & D)>(
       get: () => {
         if (undefined === cache[k]) {
           const envK = ufm(k);
-          const val = undefined !== obj[k] ? obj[k] : defaults[k];
+          const val = undefined !== obj[k] && null != obj[k] ? obj[k] : defaults[k];
           const valType = typeof val;
           if (
             envK && (

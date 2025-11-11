@@ -1,13 +1,12 @@
-version: '3'
 services:
   loremicon:
     restart: unless-stopped
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: unless-stopped
         delay: 1s
-        max_attempts: 30
-        window: 120s
+        # max_attempts: 30
+        # window: 120s
     build: 
       context: .
     ports:

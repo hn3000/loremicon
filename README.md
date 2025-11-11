@@ -188,6 +188,6 @@ The difference between the two is how colors are selected:
 
 # Building
 
-Currently builds on macOS using node 13.
+Currently builds on macOS using node 24.
 
-Docker image uses Alpine Linux and node 14.
+Docker image uses Alpine Linux and node 24.

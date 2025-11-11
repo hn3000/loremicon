@@ -4,11 +4,15 @@
     "checkJs": true,
     "alwaysStrict": true,
     "moduleResolution": "node",
+    //"allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "module": "es2022",
     "outDir": "out",
     "rootDirs": ["src"],
-    "target": "es5",
-    "downlevelIteration": true,
-    "lib": [ "es2015", "DOM.Iterable" ]
+    "target": "es2022",
+    "downlevelIteration": false,
+    "lib": [ "es2022", "DOM" ],
+    "skipLibCheck": true
   },
   "include": ["src"],
   "compileOnSave": true

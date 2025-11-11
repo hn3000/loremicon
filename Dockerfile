@@ -1,10 +1,10 @@
-FROM node:14-alpine3.13 as base
+FROM node:24-alpine AS base
 
-RUN npm config set unsafe-perm true
+# RUN npm config set unsafe-perm true
 
 RUN apk add --no-cache cairo jpeg pango giflib
 
-FROM base as builder
+FROM base AS builder
 
 RUN apk --update add --virtual build-dependencies python3 make gcc g++  \
  && npm install -g node-gyp
@@ -15,13 +15,13 @@ WORKDIR /chart-server
 
 COPY package*.json ./
 
-RUN npm install --ci --ignore-optional --production=true --non-interactive
+RUN npm ci --omit=optional --omit=dev #|| ( sleep 3600 && return -1 )
 
-FROM builder as compiler
+FROM builder AS compiler
 
 WORKDIR /chart-server
 
-RUN npm install --ci --ignore-optional --non-interactive
+RUN npm ci --omit=optional #|| ( sleep 3600 && return -1 )
 
 COPY *config*.json ./
 COPY webpack* ./

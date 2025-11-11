@@ -1,12 +1,12 @@
 
-import { DimensionTest } from './dimension-test';
-import { PositionTest } from './position-test';
-import { UtilTest } from './util-test';
+import { DimensionTest } from './dimension-test.js';
+import { PositionTest } from './position-test.js';
+import { UtilTest } from './util-test.js';
 
 import {
   TestAsync,
   TestDescription
-} from "tsunit.external/tsUnitAsync";
+} from "@hn3000/tsunit-async";
 
 function parmNum(t:TestDescription) {
   return (null != t.parameterSetNumber) ? `[${t.parameterSetNumber}]` : '';

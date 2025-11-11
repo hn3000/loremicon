@@ -1,7 +1,7 @@
 
-import { parseColor, Util } from '../src/util';
+import { parseColor, Util } from '../src/util.js';
 
-import { TestClass } from "tsunit.external/tsUnitAsync";
+import { TestClass } from "@hn3000/tsunit-async";
 
 export class UtilTest extends TestClass {
 

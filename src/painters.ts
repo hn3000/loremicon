@@ -1,5 +1,5 @@
-import { Util } from "./util";
-import { Transform } from './transformer';
+import { Util } from "./util.js";
+import { Transform } from './transformer.js';
 
 export interface IPainterContext {
   context: CanvasRenderingContext2D;

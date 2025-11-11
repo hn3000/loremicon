@@ -1,6 +1,6 @@
 
 import { renderGradient, renderNGon, renderPixels, renderPoly, renderRect, renderLightColors, renderDarkColors, renderMixedColors, IPainterContext } from './painters';
-import { Util } from './util';
+import { Util } from './util.js';
 
 function imageBlock(path, seed) {
   const url = new URL(path, location.href);

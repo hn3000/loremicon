@@ -1,8 +1,13 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
-module.exports = () => {
+import path from 'node:path';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import { CleanWebpackPlugin } from 'clean-webpack-plugin';
+
+//const path = require('path');
+//const HtmlWebpackPlugin = require('html-webpack-plugin');
+//const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+
+let config = () => {
 
   return ({
     entry: {
@@ -23,6 +28,10 @@ module.exports = () => {
     },
     resolve: {
       extensions: [ '.tsx', '.ts', '.js' ],
+      extensionAlias: {
+        '.js': ['.ts', '.js'],
+        '.mjs': ['.mts', '.mjs'],
+      }
     },
     plugins: [
       new CleanWebpackPlugin(),
@@ -35,8 +44,10 @@ module.exports = () => {
     ],
     output: {
       filename: 'bundle.js',
-      path: path.resolve(__dirname, 'dist'),
+      path: path.resolve(import.meta.dirname, 'dist'),
     },
   });
 
 };
+
+export default config;

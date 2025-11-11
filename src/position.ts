@@ -1,5 +1,5 @@
 
-import { IDimension, IUnitFactors, dimension, DimensionSpec, dimensionF } from './dimension';
+import { IDimension, IUnitFactors, dimension, DimensionSpec, dimensionF } from './dimension.js';
 
 export interface IPosition {
     x() : number;
